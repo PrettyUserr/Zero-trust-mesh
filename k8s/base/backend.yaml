@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: backend:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5001
+        env:
+        - name: DATABASE_URL
+          value: "http://database-service.database.svc.cluster.local:5002"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: backend
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 5001
+    targetPort: 5001
